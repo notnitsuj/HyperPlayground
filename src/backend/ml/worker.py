@@ -7,13 +7,16 @@ from torch.optim import Adadelta
 from torch.optim.lr_scheduler import StepLR
 from torchvision.datasets.vision import VisionDataset
 
+from .args import TrainerArguments
+from .enums import OptimizerClass, SchedulerClass
+
 
 class Trainer:
     def __init__(self,
                  model: nn.Module,
                  train_set: VisionDataset,
                  test_set: VisionDataset,
-                 trainer_args: dict,
+                 trainer_args: TrainerArguments,
                  logger):
 
         self.model = model
@@ -22,10 +25,10 @@ class Trainer:
         self.trainer_args = trainer_args
         self.logger = logger
 
-        self.train_args = {"batch_size": self.trainer_args["train_batch_size"]}
-        self.test_args = {"batch_size": self.trainer_args["test_batch_size"]}
+        self.train_args = {"batch_size": self.trainer_args.train_batch_size}
+        self.test_args = {"batch_size": self.trainer_args.test_batch_size}
 
-        if self.trainer_args["use_gpu"] and torch.cuda.is_available():
+        if self.trainer_args.use_gpu and torch.cuda.is_available():
             self.device = torch.device("cuda")
 
             cuda_args = {"num_workers": 1,
@@ -43,17 +46,14 @@ class Trainer:
         self.test_loader = torch.utils.data.DataLoader(
             self.test_set, **self.test_args)
 
-        self.optimizer = Adadelta(self.model.parameters(),
-                                  lr=self.trainer_args["lr"])
-
-        self.scheduler = StepLR(self.optimizer, step_size=1,
-                                gamma=self.trainer_args["scheduler_gamma"])
+        self.__register_optimizer(self.trainer_args.optimizer)
+        self.__register_scheduler(self.trainer_args.scheduler)
 
     def train(self):
 
         self.start_time = time.time()
 
-        for epoch in range(1, self.trainer_args["epoch"] + 1):
+        for epoch in range(1, self.trainer_args.epoch + 1):
             self.__train(epoch)
             self.__test(epoch)
             self.scheduler.step()
@@ -101,3 +101,20 @@ class Trainer:
         current_time = int(time.time() - self.start_time)
         self.logger.log_accuracy(
             epoch=epoch, accuracy=accuracy, time=current_time)
+
+    def __register_optimizer(self, optim):
+        if not optim:
+            self.optimizer = Adadelta(self.model.parameters(),
+                                      lr=self.trainer_args.lr)
+
+        optimizer_class = OptimizerClass(optim).value
+        self.optimizer = optimizer_class(
+            self.model.parameters(), lr=self.trainer_args.lr)
+
+    def __register_scheduler(self, scheduler):
+        if not scheduler:
+            self.scheduler = StepLR(self.optimizer, step_size=1, gamma=0.7)
+
+        scheduler_id, scheduler_args = scheduler
+        scheduler_class = SchedulerClass(scheduler_id)
+        self.scheduler = scheduler_class(self.optimizer, **scheduler_args)
