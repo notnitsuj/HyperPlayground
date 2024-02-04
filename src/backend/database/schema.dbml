@@ -1,14 +1,14 @@
-Table jobs {
+Table job {
   id integer [pk, unique, not null, increment]
   status integer [not null]
   queue_order integer
   backlog_order integer
   type integer [not null]
   strategy integer [not null]
-  created_at datetime
+  best integer
 }
 
-Table tasks {
+Table task {
   id integer [pk, unique, not null, increment]
   status integer [not null]
   job_id integer [not null]
@@ -27,6 +27,9 @@ Table tasks {
   scheduler integer
   scheduler_args str
   cleanlab bool
+  accuracy float
+  avg_precision float
+  avg_recall float
 }
 
 Ref: tasks.job_id - jobs.id

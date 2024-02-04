@@ -1,24 +1,35 @@
 from typing import Optional, List
-from datetime import datetime
 
 from sqlmodel import Field, SQLModel, Relationship
 
 
-class Job(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class JobBase(SQLModel):
     status: int = Field(default=0, nullable=False)
     queue_order: Optional[int] = Field(default=None)
     backlog_order: Optional[int] = Field(default=None)
     type: int = Field(nullable=False)
     strategy: int = Field(nullable=False)
-    created_at: Optional[datetime]
+
+
+class Job(JobBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    best: Optional[int] = Field(default=None)
 
     tasks: List["Task"] = Relationship(back_populates="job")
 
 
-class Task(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class JobCreate(JobBase):
+    ...
+
+
+class JobRead(JobBase):
+    id: int
+    best: Optional[int]
+
+
+class TaskBase(SQLModel):
     status: int = Field(default=0, nullable=False)
+    job_id: int = Field(foreign_key="job.id")
     execute_order: Optional[int] = Field(default=0, nullable=False)
     checkpoint: Optional[str] = Field(default=None)
     logs: Optional[str] = Field(default=None)
@@ -35,5 +46,30 @@ class Task(SQLModel, table=True):
     scheduler_args: Optional[str] = Field(default=None)
     cleanlab: Optional[bool] = Field(default=False)
 
-    job_id: int = Field(foreign_key="job.id")
+
+class Task(TaskBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    accuracy: Optional[float] = Field(default=None)
+    avg_precision: Optional[float] = Field(default=None)
+    avg_recall: Optional[float] = Field(default=None)
+
     job: Job = Relationship(back_populates="tasks")
+
+
+class TaskCreate(TaskBase):
+    ...
+
+
+class TaskRead(TaskBase):
+    id: int
+    accuracy: Optional[float]
+    avg_precision: Optional[float]
+    avg_recall: Optional[float]
+
+
+class TaskReadWithJob(TaskRead):
+    job: Optional[JobRead] = None
+
+
+class JobReadWithTasks(JobRead):
+    tasks: List[TaskRead] = []
