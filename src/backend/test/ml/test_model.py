@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from backend.ml.model import SimpleModel
+from ...ml.model import SimpleModel
 
 
 class TestSimpleModel(unittest.TestCase):
@@ -10,10 +10,11 @@ class TestSimpleModel(unittest.TestCase):
         model = SimpleModel()
 
         # MNIST dataset
-        input_size = (16, 1, 28, 28) # batch size x channel x height x width
-        output_size = (16, 10) # batch size x number of classes
+        input_size = (16, 1, 28, 28)  # batch size x channel x height x width
+        output_size = (16, 10)  # batch size x number of classes
 
-        x = torch.testing.make_tensor(shape=input_size, dtype=torch.float, device="cpu")
+        x = torch.testing.make_tensor(
+            input_size, dtype=torch.float, device="cpu")
         y = model(x)
 
         self.assertIsInstance(y, torch.Tensor)
