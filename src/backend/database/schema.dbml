@@ -1,0 +1,32 @@
+Table jobs {
+  id integer [pk, unique, not null, increment]
+  status integer [not null]
+  queue_order integer
+  backlog_order integer
+  type integer [not null]
+  strategy integer [not null]
+  created_at datetime
+}
+
+Table tasks {
+  id integer [pk, unique, not null, increment]
+  status integer [not null]
+  job_id integer [not null]
+  execute_order integer [not null]
+  checkpoint text
+  logs str
+  use_gpu bool [not null, default: false]
+  lr float [not null, default: 0.001]
+  train_batch_size integer [not null, default: 64]
+  test_batch_size integer [not null, default: 128]
+  epoch integer [not null, default: 50]
+  dropout_rate float
+  transform str
+  optimizer integer [not null, default: 5]
+  optimizer_args str
+  scheduler integer
+  scheduler_args str
+  cleanlab bool
+}
+
+Ref: tasks.job_id - jobs.id
