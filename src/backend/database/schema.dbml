@@ -32,4 +32,4 @@ Table task {
   avg_recall float
 }
 
-Ref: tasks.job_id - jobs.id
+Ref: task.job_id - job.id
