@@ -1,3 +1,4 @@
+from enum import Enum
 from aenum import MultiValueEnum
 from torch import optim
 
@@ -15,3 +16,9 @@ class SchedulerClass(MultiValueEnum):
     LinearLR = optim.lr_scheduler.LinearLR, 2
     CosineAnnealingLR = optim.lr_scheduler.CosineAnnealingLR, 3
     ReduceLROnPlateau = optim.lr_scheduler.ReduceLROnPlateau, 4
+
+
+class TunningStrategy(Enum):
+    Random = 1
+    Grid = 2
+    Bayesian = 3

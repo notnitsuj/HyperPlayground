@@ -8,7 +8,7 @@ from torch.optim.lr_scheduler import StepLR
 from torchvision.datasets.vision import VisionDataset
 
 from .args import TrainerArguments
-from .enums import OptimizerClass, SchedulerClass
+from ..enums import OptimizerClass, SchedulerClass
 
 
 class Trainer:
@@ -116,5 +116,5 @@ class Trainer:
             self.scheduler = StepLR(self.optimizer, step_size=1, gamma=0.7)
 
         scheduler_id, scheduler_args = scheduler
-        scheduler_class = SchedulerClass(scheduler_id)
+        scheduler_class = SchedulerClass(scheduler_id).value
         self.scheduler = scheduler_class(self.optimizer, **scheduler_args)
