@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "A Hands-on Hyperparameter Tuning Playground",
 };
 
-export default function RootLayout({
+export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -19,12 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {
-          <div className="flex">
+        <main className="flex-1">
+          <div>
             <SideNav />
-            <main className="flex-1">{children}</main>
+            {children}
           </div>
-        }
+        </main>
       </body>
     </html>
   );
