@@ -5,15 +5,14 @@ from sqlmodel import Field, SQLModel, Relationship
 
 class JobBase(SQLModel):
     status: int = Field(default=0, nullable=False)
-    queue_order: Optional[int] = Field(default=None)
-    backlog_order: Optional[int] = Field(default=None)
+    queue_order: int = Field(default=-1, nullable=False)
+    backlog_order: int = Field(default=-1, nullable=False)
     type: int = Field(nullable=False)
     strategy: int = Field(nullable=False)
 
 
 class Job(JobBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    best: Optional[int] = Field(default=None)
 
     tasks: List["Task"] = Relationship(back_populates="job")
 

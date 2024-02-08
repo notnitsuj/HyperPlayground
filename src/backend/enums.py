@@ -19,6 +19,21 @@ class SchedulerClass(MultiValueEnum):
 
 
 class TunningStrategy(Enum):
-    Random = 1
-    Grid = 2
-    Bayesian = 3
+    RANDOM = 1
+    GRID = 2
+    BAYESIAN = 3
+
+
+class JobType(Enum):
+    TRAIN = 0
+    TUNE = 1
+
+
+class Status(Enum):
+    BACKLOG = 0
+    QUEUE = 1
+    RUNNING = 2
+    FINISHED = 3
+    CANCELLED = 4
+    ERROR = 5
+    PAUSED = 6
