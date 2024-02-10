@@ -8,13 +8,13 @@ const useNavigation = () => {
   const pathname = usePathname();
   const [IsHomeActive, setIsHomeActive] = useState(false);
   const [isAddActive, setIsAddActive] = useState(false);
-  const [isJobsActive, setIsJobsActive] = useState(false);
+  const [isTasksActive, setIsTasksActive] = useState(false);
   const [isResultsActive, setIsResultsActive] = useState(false);
 
   useEffect(() => {
     setIsHomeActive(false);
     setIsAddActive(false);
-    setIsJobsActive(false);
+    setIsTasksActive(false);
     setIsResultsActive(false);
 
     switch (pathname) {
@@ -24,8 +24,8 @@ const useNavigation = () => {
       case "/add":
         setIsAddActive(true);
         break;
-      case "/jobs":
-        setIsJobsActive(true);
+      case "/tasks":
+        setIsTasksActive(true);
         break;
       case "/results":
         setIsResultsActive(true);
@@ -38,7 +38,7 @@ const useNavigation = () => {
   return {
     IsHomeActive,
     isAddActive,
-    isJobsActive,
+    isTasksActive,
     isResultsActive,
   };
 };

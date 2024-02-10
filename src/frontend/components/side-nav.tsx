@@ -8,7 +8,7 @@ import useNavigation from "@/app/hook/use-navigation";
 import { Icon } from "@iconify/react";
 
 const SideNav = () => {
-  const { IsHomeActive, isAddActive, isJobsActive, isResultsActive } =
+  const { IsHomeActive, isAddActive, isTasksActive, isResultsActive } =
     useNavigation();
 
   return (
@@ -46,16 +46,16 @@ const SideNav = () => {
       </Link>
 
       <Link
-        href="/jobs"
+        href="/tasks"
         className="flex flex-row space-x-4 items-center px-4 py-3 rounded-full duration-200 hover:bg-black/10"
       >
         <Icon icon="carbon:batch-job" width="38" height="38" />
         <span
           className={`text-2xl hidden md:flex ${
-            isJobsActive ? "font-bold" : ""
+            isTasksActive ? "font-bold" : ""
           }`}
         >
-          Jobs
+          Tasks
         </span>
       </Link>
 

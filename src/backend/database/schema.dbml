@@ -5,7 +5,6 @@ Table job {
   backlog_order integer
   type integer [not null]
   strategy integer [not null]
-  best integer
 }
 
 Table task {

@@ -5,7 +5,6 @@ export default interface JobInterface {
   backlog_order: number;
   type: number;
   strategy: number;
-  best: number | null;
   tasks: {
     id: number;
     status: number;

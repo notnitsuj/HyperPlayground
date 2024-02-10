@@ -23,15 +23,12 @@ class JobCreate(JobBase):
 
 class JobRead(JobBase):
     id: int
-    best: Optional[int]
 
 
 class TaskBase(SQLModel):
     status: int = Field(default=0, nullable=False)
     job_id: int = Field(foreign_key="job.id")
-    execute_order: Optional[int] = Field(default=0, nullable=False)
-    checkpoint: Optional[str] = Field(default=None)
-    logs: Optional[str] = Field(default=None)
+    execute_order: Optional[int] = Field(default=1, nullable=False)
     use_gpu: Optional[bool] = Field(default=False, nullable=False)
     lr: Optional[float] = Field(default=1e-3, nullable=False)
     train_batch_size: Optional[int] = Field(default=64, nullable=False)
@@ -48,9 +45,12 @@ class TaskBase(SQLModel):
 
 class Task(TaskBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    checkpoint: Optional[str] = Field(default=None)
+    logs: Optional[str] = Field(default=None)
     accuracy: Optional[float] = Field(default=None)
     avg_precision: Optional[float] = Field(default=None)
     avg_recall: Optional[float] = Field(default=None)
+    runtime: Optional[int] = Field(default=0)
 
     job: Job = Relationship(back_populates="tasks")
 
@@ -64,6 +64,7 @@ class TaskRead(TaskBase):
     accuracy: Optional[float]
     avg_precision: Optional[float]
     avg_recall: Optional[float]
+    runtime: Optional[int]
 
 
 class TaskReadWithJob(TaskRead):
