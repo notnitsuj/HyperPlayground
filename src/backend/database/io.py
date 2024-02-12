@@ -1,3 +1,5 @@
+import os
+import json
 from typing import Iterable
 
 from sqlmodel import Session, select
@@ -7,7 +9,84 @@ from enums import JobType, Status
 
 
 class Logger:
-    ...
+    def __init__(self):
+        self.__session = None
+        self.__db_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_dir = os.path.join(self.__db_dir, "data/")
+        self.checkpoint_dir = os.path.join(self.__db_dir, "checkpoints/")
+        self.log_dir = os.path.join(self.__db_dir, "logs/")
+
+        self.checkpoint_path = None
+        self.log_path = None
+
+        self.task = Task()
+
+        self.train_logs = []
+        self.test_logs = []
+        self.runtime = None
+
+    def register_session(self, session: Session):
+        self.__session = session
+
+    def register_task(self, task: Task):
+        self.task = task
+
+        self.checkpoint_path = self.checkpoint_dir + \
+            f"Job{self.task.job_id}_Task{self.task.id}.pt"
+        self.task.checkpoint = self.checkpoint_path
+
+        self.log_path = self.log_dir + \
+            f"Job{self.task.job_id}_Task{self.task.id}.json"
+        self.task.logs = self.log_path
+
+        self.task.status = Status.RUNNING.value
+
+        self.update_db()
+
+    def finish(self, runtime: float):
+        self.task.runtime = runtime
+        self.update_db()
+
+        self.save_logs()
+
+        self.checkpoint_path = None
+        self.log_path = None
+
+        self.task = Task()
+
+        self.train_logs = []
+        self.val_logs = []
+        self.runtime = None
+
+    def log_train(self, epoch: int, step: int,  loss: float, time: float):
+        self.train_logs.append({
+            "epoch": epoch,
+            "step": step,
+            "loss": loss,
+            "time": time
+        })
+
+    def log_test(self, epoch: int, step: int,  loss: float, time: float):
+        self.test_logs.append({
+            "epoch": epoch,
+            "step": step,
+            "loss": loss,
+            "time": time
+        })
+
+    def update_db(self):
+        self.__session.add(self.task)
+        self.__session.commit()
+        self.__session.refresh(self.task)
+
+    def save_logs(self):
+        logs = {
+            "train": self.train_logs,
+            "test": self.test_logs
+        }
+
+        with open(self.log_path, 'w', encoding='utf-8') as f:
+            json.dump(logs, f, ensure_ascii=False, indent=4)
 
 
 def create_tasks(job: Job) -> Iterable[object]:

@@ -47,9 +47,9 @@ class Task(TaskBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     checkpoint: Optional[str] = Field(default=None)
     logs: Optional[str] = Field(default=None)
-    accuracy: Optional[float] = Field(default=None)
-    avg_precision: Optional[float] = Field(default=None)
-    avg_recall: Optional[float] = Field(default=None)
+    accuracy: Optional[float] = Field(default=0)
+    avg_precision: Optional[float] = Field(default=0)
+    avg_recall: Optional[float] = Field(default=0)
     runtime: Optional[int] = Field(default=0)
 
     job: Job = Relationship(back_populates="tasks")

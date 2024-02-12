@@ -1,13 +1,17 @@
-from enums import Status
-from database.io import create_tasks, Logger, reorder_backlog_queue
-from database.models import *
-from database.db import instantiate_db, get_session
 from typing import List
+from threading import Thread
 
 from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 import uvicorn
+
+from ml.utils import seed_everything
+from database.io import create_tasks, reorder_backlog_queue, Logger
+from database.models import *
+from database.db import instantiate_db, get_session, engine
+from service.train import start_training_thread
+from enums import Status
 
 
 app = FastAPI()
@@ -19,9 +23,28 @@ app.add_middleware(
 )
 
 
+class loop:
+    def __init__(self) -> None:
+        self.is_loop = True
+
+
+looper = loop()
+
+logger = Logger()
+thread = Thread(target=start_training_thread, args=(engine, logger, looper))
+
+
 @app.on_event("startup")
 def on_startup():
+    seed_everything()
     instantiate_db()
+    thread.start()
+
+
+@app.on_event("shutdown")
+def on_shutdown():
+    looper.is_loop = False
+    thread.join()
 
 
 @app.get("/jobs/", response_model=List[JobReadWithTasks])
