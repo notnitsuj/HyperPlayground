@@ -4,7 +4,7 @@ import React from "react";
 
 import Link from "next/link";
 
-import useNavigation from "@/app/hook/use-navigation";
+import useNavigation from "@/hook/use-navigation";
 import { Icon } from "@iconify/react";
 
 const SideNav = () => {
