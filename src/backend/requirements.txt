@@ -1,0 +1,10 @@
+aenum
+fastapi
+numpy
+pydantic
+pytest
+pytest
+sqlmodel
+torch
+torchvision
+uvicorn

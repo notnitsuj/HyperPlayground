@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./src/frontend
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - my_network
+
+  backend:
+    container_name: backend
+    build:
+      context: ./src/backend/
+      dockerfile: ./Dockerfile
+    ports:
+      - "8000:8000"
+
+networks:
+  my_network:
+    external: true
